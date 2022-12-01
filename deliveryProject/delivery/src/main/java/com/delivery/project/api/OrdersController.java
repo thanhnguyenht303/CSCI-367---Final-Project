@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.UUID;
 
-
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/api")
 public class OrdersController {
@@ -33,7 +32,7 @@ public class OrdersController {
         return new ResponseEntity<List<Orders>>(orders, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/orders/find{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/orders/find/{id}", method = RequestMethod.GET)
     public Orders findOrders (@PathVariable("id") final String id){
         Orders orders = ordersService.findById(id).orElseThrow();
         if(orders == null){
@@ -54,4 +53,18 @@ public class OrdersController {
         ordersService.delete(orders);
         return ResponseEntity.ok().build();
     }
+
+    @RequestMapping(value = "/orders/update/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<Orders> updateOrders (@PathVariable(value = "id") String ordersId,
+                                                @Valid @RequestBody Orders ordersForm){
+        Orders orders = ordersService.findById(ordersId).orElseThrow();
+        if(orders == null){
+            return ResponseEntity.notFound().build();
+        }
+        orders.setStatusId(ordersForm.getStatusId());
+
+        Orders updateOrders = ordersService.save(orders);
+        return ResponseEntity.ok(updateOrders);
+    }
 }
+

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/api")
 public class AddressController {
@@ -42,6 +43,19 @@ public class AddressController {
     @RequestMapping(value =  "/address/add", method = RequestMethod.POST)
     public Address saveAddress (@Valid @RequestBody Address address) {
         return addressService.save(address);
+    }
+
+    @RequestMapping(value = "/address/update/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<Address> updateAddress (@PathVariable(value = "id") int addressId,
+                                                    @Valid @RequestBody Address addressForm) {
+        Address address = addressService.findById(addressId).orElseThrow();
+        if(address == null) {
+            return ResponseEntity.notFound().build();
+        }
+        address.setAddress(addressForm.getAddress());
+
+        Address updateAddress = addressService.save(address);
+        return ResponseEntity.ok(updateAddress);
     }
 
 }

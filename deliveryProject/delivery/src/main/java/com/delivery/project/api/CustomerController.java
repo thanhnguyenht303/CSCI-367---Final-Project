@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/api")
 public class CustomerController {
@@ -44,4 +45,17 @@ public class CustomerController {
         return customerService.save(customer);
     }
 
+    @RequestMapping(value = "/customer/update/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<Customer> updateCustomer (@PathVariable(value = "id") int customerId,
+                                                    @Valid @RequestBody Customer customerForm){
+        Customer customer = customerService.findById(customerId).orElseThrow();
+        if(customer == null){
+            return ResponseEntity.notFound().build();
+        }
+        customer.setName(customerForm.getName());
+        customer.setPhoneNumber(customerForm.getPhoneNumber());
+
+        Customer updateCustomer = customerService.save(customer);
+        return ResponseEntity.ok(updateCustomer);
+    }
 }

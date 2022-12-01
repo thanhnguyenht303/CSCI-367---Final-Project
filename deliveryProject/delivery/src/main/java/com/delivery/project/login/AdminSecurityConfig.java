@@ -35,11 +35,11 @@ public class AdminSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authenticationProvider(authenticationProvider());
+        http.cors().and().authenticationProvider(authenticationProvider());
 
-        http.authorizeRequests().antMatchers("/").permitAll();
+        http.cors().and().authorizeRequests().antMatchers("/").permitAll();
 
-        http.antMatcher("/admin/**").authorizeRequests().anyRequest().authenticated()
+        http.cors().and().antMatcher("/admin/**").authorizeRequests().anyRequest().authenticated()
                 .and()
                     .formLogin()
                     .loginPage("/admin/login")
